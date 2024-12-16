@@ -1,0 +1,8 @@
+---
+source: crates/tests/databases-tests/src/postgres/query_tests.rs
+expression: result
+---
+{
+  "message": "error returned from database: invalid input syntax for type integer: \"\"",
+  "details": null
+}
