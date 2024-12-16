@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./empty-database.sql:/docker-entrypoint-initdb.d/01-empty-database.sql
+      - ./chinook-postgres.sql:/docker-entrypoint-initdb.d/02-chinook-postgres.sql
+    healthcheck:
+       test: ["CMD-SHELL", "pg_isready -U postgres"]
+       interval: 5s
+       timeout: 5s
+       retries: 5
+       start_period: 10s
+  connector:
+      image: ghcr.io/hasura/ndc-postgres:v1.2.0
+      command:
+        - serve
+        - --configuration=/ndc-metadata
+      ports:
+        - 8080:8080
+      environment:
+        CONNECTION_URI: postgresql://postgres:postgres@postgres:5432/postgres
+      volumes:
+        - type: bind
+          source: ./ndc-metadata
+          target: /ndc-metadata
+          read_only: true
+      healthcheck:
+        test:
+          - CMD
+          - ./ndc-postgres-cli
+          - check-health
+        start_period: 5s
+        interval: 5s
+        timeout: 10s
+        retries: 3
+      depends_on:
+        postgres:
+          condition: service_healthy
+
+volumes:
+  postgres_data:
