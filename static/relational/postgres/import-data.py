@@ -24,15 +24,24 @@ def create_table_from_json(json_data, table_name, engine):
     # Convert JSON to DataFrame
     df = pd.DataFrame(json_data)
 
+    # Check if table exists
+    with engine.connect() as conn:
+        result = conn.execute(text(f"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{table_name}')"))
+        table_exists = result.scalar()
+
+        if not table_exists:
+            print(f"Error: Table '{table_name}' does not exist")
+            sys.exit(1)
+
     # Create table and insert data
     try:
         df.to_sql(
             table_name,
             engine,
-            if_exists='replace',
+            if_exists='append',
             index=False
         )
-        print(f"Successfully created and populated table: {table_name}")
+        print(f"Successfully populated table: {table_name}")
     except Exception as e:
         print(f"Error creating table {table_name}: {str(e)}")
 
