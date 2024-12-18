@@ -18,6 +18,15 @@ jobs:
       - name: Setup Docker
         uses: docker/setup-buildx-action@v3
 
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Python Dependencies
+        run: |
+          pip install psycopg2-binary pandas sqlalchemy
+
       - name: Start PostgreSQL
         working-directory: static/relational/postgres
         run: |
@@ -28,6 +37,15 @@ jobs:
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
+
+      - name: Load Data into PostgreSQL
+        working-directory: static/relational/postgres
+        run: |
+          python import-data.py ../../../relational/dataset \
+          --database postgres \
+          --user postgres \
+          --port 5433 \
+          --password postgres
 
       - name: Setup NDC Postgres
         working-directory: static/relational/postgres
