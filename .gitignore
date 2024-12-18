@@ -1,0 +1,29 @@
+# Ignore NDC metadata directory
+static/relational/postgres/ndc-metadata/
+
+# Common directories to ignore
+node_modules/
+dist/
+build/
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+
+# Binary files that get downloaded
+static/relational/postgres/ndc-postgres-cli
+static/relational/postgres/ndc-test
+static/relational/postgres/ndc-test-local
