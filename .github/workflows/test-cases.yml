@@ -51,8 +51,19 @@ jobs:
           curl -L --fail -o ndc-postgres-cli "${BINARY_URL}"
           chmod +x ndc-postgres-cli
 
+          mkdir -p ndc-metadata
+          cd ndc-metadata
+
+          echo "Initializing NDC Postgres configuration"
+          ./ndc-postgres-cli initialize
+
+          echo "Updating NDC Postgres configuration"
           # Initialize and configure NDC using existing metadata
           ./ndc-postgres-cli update
+
+          cd ..
+
+          echo "Starting NDC Postgres connector"
 
           # Start NDC service
           docker compose up -d connector
