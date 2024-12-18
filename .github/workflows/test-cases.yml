@@ -11,9 +11,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'relational/**'
-      - 'static/relational/**'
 
 jobs:
   validate-test-cases:
@@ -55,11 +52,11 @@ jobs:
           cd ndc-metadata
 
           echo "Initializing NDC Postgres configuration"
-          ./ndc-postgres-cli initialize
+          ../ndc-postgres-cli initialize
 
           echo "Updating NDC Postgres configuration"
           # Initialize and configure NDC using existing metadata
-          ./ndc-postgres-cli update
+          ../ndc-postgres-cli update
 
           cd ..
 
