@@ -88,8 +88,10 @@ def process_json_files(json_directory, db_params):
 
         except json.JSONDecodeError as e:
             print(f"Error reading JSON file {filename}: {str(e)}")
+            sys.exit(1)
         except Exception as e:
             print(f"Error processing file {filename}: {str(e)}")
+            sys.exit(1)
 
 def main():
     # Set up argument parser
