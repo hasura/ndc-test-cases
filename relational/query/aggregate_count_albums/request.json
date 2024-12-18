@@ -24,11 +24,6 @@
         "type": "single_column",
         "column": "ArtistId",
         "function": "max"
-      },
-      "avg_artist_id": {
-        "type": "single_column",
-        "column": "ArtistId",
-        "function": "avg"
       }
     }
   },
