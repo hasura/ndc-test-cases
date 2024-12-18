@@ -11,13 +11,17 @@ import sys
 
 def sanitize_table_name(filename):
     """Convert filename to valid PostgreSQL table name."""
-    # Remove file extension and special characters
-    table_name = os.path.splitext(filename)[0]
+    # Remove the numeric prefix and file extension
+    table_name = filename.split('_', 1)[1] if '_' in filename else filename
+    table_name = os.path.splitext(table_name)[0]
+
     # Replace any non-alphanumeric characters with underscore
     table_name = re.sub(r'\W+', '_', table_name)
+
     # Ensure name starts with letter
     if not table_name[0].isalpha():
         table_name = 'table_' + table_name
+
     return table_name
 
 def create_table_from_json(json_data, table_name, engine):
@@ -63,7 +67,9 @@ def process_json_files(json_directory, db_params):
     )
 
     # Count JSON files
-    json_files = sorted([f for f in os.listdir(json_directory) if f.endswith('.json')])
+    json_files = sorted([f for f in os.listdir(json_directory) if f.endswith('.json')],
+                   key=lambda x: int(x.split('_')[0]))
+
     if not json_files:
         print(f"No JSON files found in '{json_directory}'")
         sys.exit(1)
