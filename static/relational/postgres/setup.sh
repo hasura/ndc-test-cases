@@ -5,7 +5,7 @@ set -e
 
 # Check if version argument is provided
 if [ -z "$1" ]; then
-    echo "Error: Version argument is required"
+    echo "Error: NDC postgres version argument is required"
     echo "Usage: $0 <version>"
     echo "Example: $0 v1.2.0"
     exit 1
@@ -13,6 +13,7 @@ fi
 
 VERSION=$1
 BINARY_URL="https://github.com/hasura/ndc-postgres/releases/download/${VERSION}/ndc-postgres-cli-x86_64-unknown-linux-gnu"
+NDC_TEST_URL="https://github.com/hasura/ndc-spec/releases/download/v0.1.6/ndc-test-x86_64-unknown-linux-gnu"
 
 # Start PostgreSQL
 echo "Starting PostgreSQL..."
@@ -26,7 +27,7 @@ until docker compose ps postgres | grep "healthy"; do
 done
 echo "PostgreSQL is ready!"
 
-# Download the binary with progress and status checking
+# Download the NDC Postgres CLI binary
 echo "Downloading NDC Postgres CLI version ${VERSION}..."
 HTTP_RESPONSE=$(curl -L --fail \
                     --write-out "%{http_code}" \
@@ -41,24 +42,41 @@ if [ $? -ne 0 ] || [ "$HTTP_RESPONSE" -ne 200 ]; then
     exit 1
 fi
 
-echo "✓ Download completed successfully (HTTP ${HTTP_RESPONSE})"
+echo "✓ Download of NDC Postgres CLI completed successfully (HTTP ${HTTP_RESPONSE})"
 
-# Verify the download
-if [ ! -f ndc-postgres-cli ]; then
-    echo "Error: Binary file not found after download"
+# Download the NDC Test binary
+echo "Downloading NDC Test..."
+NDC_TEST_RESPONSE=$(curl -L --fail \
+                    --write-out "%{http_code}" \
+                    --progress-bar \
+                    ${NDC_TEST_URL} \
+                    -o ndc-test-local)
+
+if [ $? -ne 0 ] || [ "$NDC_TEST_RESPONSE" -ne 200 ]; then
+    echo "Error: Failed to download NDC Test"
+    echo "URL: ${NDC_TEST_URL}"
+    echo "HTTP Status: ${NDC_TEST_RESPONSE}"
     exit 1
 fi
 
-# Make the binary executable
-chmod +x ndc-postgres-cli
+echo "✓ Download of NDC Test completed successfully (HTTP ${NDC_TEST_RESPONSE})"
 
-# Verify the binary is executable
-if ! ./ndc-postgres-cli --help >/dev/null 2>&1; then
-    echo "Error: Downloaded binary is not executable or is invalid"
-    exit 1
-fi
+# Verify the downloads and make executables
+for binary in ndc-postgres-cli ndc-test-local; do
+    if [ ! -f "$binary" ]; then
+        echo "Error: $binary file not found after download"
+        exit 1
+    fi
 
-echo "✓ Binary verified and ready"
+    chmod +x "$binary"
+
+    if ! ./"$binary" --help >/dev/null 2>&1; then
+        echo "Error: Downloaded $binary is not executable or is invalid"
+        exit 1
+    fi
+
+    echo "✓ $binary verified and ready"
+done
 
 # Remove existing ndc-metadata directory if it exists
 if [ -d "ndc-metadata" ]; then
@@ -80,7 +98,7 @@ export CONNECTION_URI='postgresql://postgres:postgres@localhost:5433/postgres'
 ../ndc-postgres-cli update
 
 # Start the NDC service
-echo "Starting NDC Postgres service..."
+echo "Starting NDC service..."
 cd ..  # Move back to the root directory
 docker compose up -d connector
 
@@ -100,6 +118,10 @@ done
 
 echo "✓ NDC service is ready and healthy!"
 echo "Service is running at http://localhost:8080"
+
+# Run NDC tests
+echo "Running NDC tests..."
+./ndc-test replay --endpoint http://0.0.0.0:8080 --snapshots-dir ~/hasura/v3/ndc-test-cases/relational
 
 # Keep the script running and show logs
 echo "Following logs... (Press Ctrl+C to stop)"
