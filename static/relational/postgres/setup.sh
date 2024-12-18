@@ -27,6 +27,11 @@ until docker compose ps postgres | grep "healthy"; do
 done
 echo "PostgreSQL is ready!"
 
+echo "Loading data into the DB"
+echo "PWD Is $PWD"
+python3 import-data.py ../../../relational/dataset --database postgres --user postgres --port 5433 --password postgres
+echo "Data loaded successfully"
+
 # Download the NDC Postgres CLI binary
 echo "Downloading NDC Postgres CLI version ${VERSION}..."
 HTTP_RESPONSE=$(curl -L --fail \
@@ -121,8 +126,4 @@ echo "Service is running at http://localhost:8080"
 
 # Run NDC tests
 echo "Running NDC tests..."
-./ndc-test replay --endpoint http://0.0.0.0:8080 --snapshots-dir ~/hasura/v3/ndc-test-cases/relational
-
-# Keep the script running and show logs
-echo "Following logs... (Press Ctrl+C to stop)"
-docker compose logs -f postgres connector
+./ndc-test-local replay --endpoint http://0.0.0.0:8080 --snapshots-dir ~/hasura/v3/ndc-test-cases/relational
