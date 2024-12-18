@@ -63,7 +63,7 @@ def process_json_files(json_directory, db_params):
     )
 
     # Count JSON files
-    json_files = [f for f in os.listdir(json_directory) if f.endswith('.json')]
+    json_files = sorted([f for f in os.listdir(json_directory) if f.endswith('.json')])
     if not json_files:
         print(f"No JSON files found in '{json_directory}'")
         sys.exit(1)
