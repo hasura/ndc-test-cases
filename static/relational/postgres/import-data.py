@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import pandas as pd
 from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 import re
 import argparse
 import sys
