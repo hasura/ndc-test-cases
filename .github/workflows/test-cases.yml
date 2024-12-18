@@ -38,6 +38,8 @@ jobs:
 
       - name: Setup NDC Postgres
         working-directory: static/relational/postgres
+        env:
+          CONNECTION_URI: postgresql://postgres:postgres@localhost:5433/postgres
         run: |
           # Get latest NDC Postgres version
           NDC_POSTGRES_VERSION=$(curl -s https://api.github.com/repos/hasura/ndc-postgres/releases/latest | jq -r .tag_name)
