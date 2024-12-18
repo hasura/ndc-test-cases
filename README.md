@@ -2,6 +2,14 @@
 
 This repository contains test cases for validating Native Database Connector (NDC) implementations against the NDC specification.
 
+Connector authors are encouraged to use these preprepared test cases and test their connector implementations by importing the dataset 
+included within this repo. Slight discrepancies might exist in the responses, but there should not be a major difference between your connector responses and the test cases in this repository.
+
+Currently, only test cases for relational DBs exist in this repo and we are planning to add more test cases for different kinds of data sources 
+like MongoDB etc.
+
+
+
 ## Overview
 
 The test cases in this repository help verify that NDC implementations correctly handle various database operations and scenarios. 
@@ -24,7 +32,10 @@ kinds of databases like NoSQL, document DBs etc.
         └── postgres/      # PostgreSQL specific resources
 ```
 
-## Running Tests Locally
+## Running Tests locally
+
+This section provides an overview on how you can import the data on the postgres datasource and r
+run tests on the Postgres connector.
 
 ### Prerequisites
 
