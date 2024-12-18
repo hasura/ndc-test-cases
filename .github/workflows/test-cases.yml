@@ -84,11 +84,11 @@ jobs:
         run: |
           curl -L --fail -o ndc-test https://github.com/hasura/ndc-spec/releases/download/v0.1.6/ndc-test-x86_64-unknown-linux-gnu
           chmod +x ndc-test
+          sudo mv ndc-test /usr/local/bin/
 
       - name: Run Tests
-        working-directory: static/relational/postgres
         run: |
-          ./ndc-test replay --endpoint http://localhost:8080 --snapshots-dir ../../relational
+          ndc-test replay --endpoint http://localhost:8080 --snapshots-dir relational
 
       - name: Collect Logs on Failure
         if: failure()
