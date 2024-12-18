@@ -35,7 +35,7 @@ jobs:
           CONNECTION_URI: postgresql://postgres:postgres@local.hasura.dev:5433/postgres
         run: |
           # Get latest NDC Postgres version
-          NDC_POSTGRES_VERSION=$(curl -s https://api.github.com/repos/hasura/ndc-postgres/releases/latest | jq -r .tag_name)
+          NDC_POSTGRES_VERSION=v1.2.0
           echo "Using NDC Postgres version: ${NDC_POSTGRES_VERSION}"
 
           # Download and setup NDC Postgres
