@@ -15,6 +15,9 @@ VERSION=$1
 BINARY_URL="https://github.com/hasura/ndc-postgres/releases/download/${VERSION}/ndc-postgres-cli-x86_64-unknown-linux-gnu"
 NDC_TEST_URL="https://github.com/hasura/ndc-spec/releases/download/v0.1.6/ndc-test-x86_64-unknown-linux-gnu"
 
+# Stop and remove existing containers
+docker compose down -v
+
 # Start PostgreSQL
 echo "Starting PostgreSQL..."
 docker compose up -d
@@ -67,7 +70,7 @@ fi
 echo "✓ Download of NDC Test completed successfully (HTTP ${NDC_TEST_RESPONSE})"
 
 # Verify the downloads and make executables
-for binary in ndc-postgres-cli ndc-test-local; do
+for binary in ndc-postgres-cli; do
     if [ ! -f "$binary" ]; then
         echo "Error: $binary file not found after download"
         exit 1
@@ -126,4 +129,7 @@ echo "Service is running at http://localhost:8080"
 
 # Run NDC tests
 echo "Running NDC tests..."
-./ndc-test-local replay --endpoint http://0.0.0.0:8080 --snapshots-dir ~/hasura/v3/ndc-test-cases/relational
+ndc-test-local replay --endpoint http://0.0.0.0:8080 --snapshots-dir ~/hasura/v3/ndc-test-cases/relational
+
+# Stop the NDC service
+docker compose down -v
