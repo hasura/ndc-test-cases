@@ -125,11 +125,11 @@ until docker compose ps connector | grep "healthy"; do
 done
 
 echo "✓ NDC service is ready and healthy!"
-echo "Service is running at http://localhost:8080"
+echo "Service is running at http://localhost:8081"
 
 # Run NDC tests
 echo "Running NDC tests..."
-ndc-test-local replay --endpoint http://0.0.0.0:8080 --snapshots-dir ~/hasura/v3/ndc-test-cases/relational
+ndc-test-local replay --endpoint http://0.0.0.0:8081 --snapshots-dir ~/hasura/v3/ndc-test-cases/relational
 
-# Stop the NDC service
-docker compose down -v
+# # Stop the NDC service
+# docker compose down -v

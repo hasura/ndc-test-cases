@@ -1,0 +1,52 @@
+services:
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Password123
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./init.sql:/init.sql
+      - mssql_data:/var/opt/mssql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - |
+          /opt/mssql-tools18/bin/sqlcmd -C -U SA -P "$$SA_PASSWORD" -d 'master'
+
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+  connector:
+      image: ghcr.io/hasura/ndc-sqlserver:v2.0.0
+      command:
+        - serve
+        - --configuration=/ndc-metadata
+      ports:
+        - 8080:8080
+      environment:
+        CONNECTION_URI: 'Server=mssql,1433;Database=master;User Id=SA;Password=YourStrong@Password123;TrustServerCertificate=True;'
+      volumes:
+        - type: bind
+          source: ./ndc-metadata
+          target: /ndc-metadata
+          read_only: true
+      healthcheck:
+        test:
+          - CMD
+          - ./ndc-sqlserver-cli
+          - check-health
+        start_period: 5s
+        interval: 5s
+        timeout: 10s
+        retries: 3
+      depends_on:
+        mssql:
+          condition: service_healthy
+
+volumes:
+  mssql_data:
