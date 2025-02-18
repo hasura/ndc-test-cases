@@ -28,7 +28,7 @@ kinds of databases like NoSQL, document DBs etc.
 │   │       └── expected.json
 │   └── scripts/           # Helper scripts
 └── static/                # Static test resources
-    └── relational/       
+    └── relational/
         └── postgres/      # PostgreSQL specific resources
 ```
 
@@ -57,7 +57,7 @@ cd static/relational/postgres
 docker compose up -d
 ```
 
-### Running NDC Tests 
+### Running NDC Tests
 
 Use the `ndc-test` CLI to run the test cases:
 
@@ -79,7 +79,7 @@ Both workflows:
 
 ## Contributing
 
-You can add a new test case by adding a new folder under the snapshot folder 
+You can add a new test case by adding a new folder under the snapshot folder
 
 ### Adding New Test Cases
 
