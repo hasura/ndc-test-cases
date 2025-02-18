@@ -99,7 +99,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          ndc-test replay --endpoint http://localhost:8080 --snapshots-dir relational
+          ndc-test replay --endpoint http://localhost:8081 --snapshots-dir relational
 
       - name: Collect Logs on Failure
         if: failure()
