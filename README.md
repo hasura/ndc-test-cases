@@ -62,7 +62,7 @@ docker compose up -d
 Use the `ndc-test` CLI to run the test cases:
 
 ```bash
-ndc-test replay --endpoint http://localhost:8080 --snapshots-dir relational
+ndc-test replay --endpoint http://localhost:8081 --snapshots-dir relational
 ```
 
 ### GitHub Actions
