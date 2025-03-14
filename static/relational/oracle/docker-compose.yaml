@@ -1,0 +1,45 @@
+services:
+
+  oracle:
+    image: gvenzl/oracle-xe:21.3.0-slim
+    restart: always
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PASSWORD: mypassword
+      APP_USER: example
+      APP_USER_PASSWORD: mypassword
+      TARGET_PDB: XEPDB1
+    volumes:
+      - ./init.sql:/init.sql
+      - oracle_data:/var/lib/oracle/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - |
+          sqlplus example/mypassword@local.hasura.dev:1521/XEPDB1
+
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+  connector:
+      image: ghcr.io/hasura/ndc-jvm-oracle:v1.0.6
+      command:
+        - serve
+        - --configuration=/ndc-metadata
+      ports:
+        - 8080:8080
+      environment:
+        CONNECTION_URI: 'jdbc:oracle:thin:@0.tcp.in.ngrok.io:14739/XEPDB1?user=example&password=mypassword'
+      volumes:
+        - type: bind
+          source: ./ndc-metadata
+          target: /ndc-metadata
+          read_only: true
+      depends_on:
+        oracle:
+          condition: service_healthy
+
+volumes:
+  oracle_data:
